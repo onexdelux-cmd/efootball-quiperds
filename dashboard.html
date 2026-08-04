@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de bord - QUIPERD</title>
+    <link rel="stylesheet" href="output.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const { createClient } = supabase;
+        const supabaseClient = createClient('https://ablgizyhsrxeyiqlwedk.supabase.co', 'sb_publishable_naBMhihexjfObenhOLfS7A_je5U9adw');
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="bg-[var(--color-bg-primary)] min-h-screen pb-20 md:pb-0">
+    <!-- Menu Hamburger pour connectés -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-lg border-b border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <a href="dashboard.html" class="font-orbitron text-2xl font-bold gradient-text">QUIPERD</a>
+                </div>
+                <button id="hamburgerBtn" class="p-2 rounded-lg hover:bg-white/10 transition-colors">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div id="mobileMenu" class="hidden bg-black/95 border-t border-gray-800">
+            <div class="px-4 py-6 space-y-4">
+                <div class="px-4 py-3 bg-white/5 rounded-lg">
+                    <p class="text-gray-400 text-sm">Connecté en tant que</p>
+                    <p id="menuUsername" class="font-orbitron font-bold text-white">Utilisateur</p>
+                </div>
+                
+                <a href="dashboard.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white">
+                    🏠 Accueil
+                </a>
+                <a href="users-room.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white">
+                    👥 Salle des Utilisateurs
+                </a>
+                <a href="challenges.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white">
+                    ⚔️ Salle des Défis
+                </a>
+                <a href="wallet.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white">
+                    💰 Portefeuille
+                </a>
+                <a href="ranking.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white">
+                    🏆 Classement
+                </a>
+                <a href="history.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white">
+                    📜 Historique
+                </a>
+                <a href="profile.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white">
+                    👤 Mon Compte
+                </a>
+                
+                <a href="notifications.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white relative">
+                    🔔 Notifications
+                    <span id="notificationBadge" class="hidden absolute right-4 top-3 w-5 h-5 bg-red-500 rounded-full text-xs flex items-center justify-center">0</span>
+                </a>
+                
+                <a href="admin.html" id="adminLink" class="hidden block px-4 py-3 rounded-lg bg-red-500/20 hover:bg-red-500/30 transition-colors text-red-400">
+                    🛡️ Administration
+                </a>
+                
+                <button id="logoutBtn" class="block w-full px-4 py-3 rounded-lg bg-red-500/20 hover:bg-red-500/30 transition-colors text-red-400 font-semibold text-left">
+                    🚪 Déconnexion
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenu principal -->
+    <main class="max-w-7xl mx-auto px-4 py-6 md:py-12">
+        <!-- Welcome Header -->
+        <div class="glass-card-glow rounded-2xl p-6 md:p-8 mb-8 animate-fade-in-up">
+            <div class="flex flex-col md:flex-row items-center gap-6">
+                <div class="relative">
+                    <div class="w-20 h-20 md:w-24 md:h-24 rounded-full bg-gradient-to-br from-cyan-400 to-purple-500 flex items-center justify-center avatar-glow">
+                        <span id="welcomeAvatar" class="font-orbitron text-3xl md:text-4xl font-bold">U</span>
+                    </div>
+                    <div class="absolute bottom-0 right-0 w-4 h-4 bg-green-400 rounded-full border-2 border-black animate-pulse"></div>
+                </div>
+                <div class="flex-1 text-center md:text-left">
+                    <h1 class="font-orbitron text-2xl md:text-3xl font-bold gradient-text mb-2">
+                        Bienvenue, <span id="welcomeUsername">Joueur</span>!
+                    </h1>
+                    <div class="flex flex-wrap items-center justify-center md:justify-start gap-4 text-sm">
+                        <span class="badge badge-info">Niveau <span id="welcomeLevel">1</span></span>
+                        <span class="text-[var(--color-text-secondary)]">🇨🇮 Cameroun</span>
+                        <span class="text-green-400">● En ligne</span>
+                    </div>
+                    <div class="mt-4">
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-[var(--color-text-secondary)]">XP</span>
+                            <span class="text-[var(--color-cyan)]"><span id="currentXP">0</span> / <span id="nextLevelXP">100</span></span>
+                        </div>
+                        <div class="progress-bar">
+                            <div id="xpProgressBar" class="progress-bar-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Premium Stats Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
+            <div class="glass-card rounded-xl p-4 md:p-6 animate-fade-in-up" style="animation-delay: 0.1s">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-[var(--color-text-secondary)] text-sm">Solde</span>
+                    <span class="text-xl md:text-2xl">💰</span>
+                </div>
+                <p id="userBalance" class="font-orbitron text-xl md:text-2xl font-bold text-[var(--color-cyan)] animate-number">0</p>
+                <p class="text-xs text-[var(--color-text-tertiary)] mt-1">FCFA</p>
+            </div>
+            
+            <div class="glass-card rounded-xl p-4 md:p-6 animate-fade-in-up" style="animation-delay: 0.2s">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-[var(--color-text-secondary)] text-sm">Victoires</span>
+                    <span class="text-xl md:text-2xl">🏆</span>
+                </div>
+                <p id="userWins" class="font-orbitron text-xl md:text-2xl font-bold text-[var(--color-green)] animate-number">0</p>
+                <p class="text-xs text-[var(--color-text-tertiary)] mt-1">Matchs gagnés</p>
+            </div>
+            
+            <div class="glass-card rounded-xl p-4 md:p-6 animate-fade-in-up" style="animation-delay: 0.3s">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-[var(--color-text-secondary)] text-sm">Défaites</span>
+                    <span class="text-xl md:text-2xl">❌</span>
+                </div>
+                <p id="userLosses" class="font-orbitron text-xl md:text-2xl font-bold text-[var(--color-red)] animate-number">0</p>
+                <p class="text-xs text-[var(--color-text-tertiary)] mt-1">Matchs perdus</p>
+            </div>
+            
+            <div class="glass-card rounded-xl p-4 md:p-6 animate-fade-in-up" style="animation-delay: 0.4s">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-[var(--color-text-secondary)] text-sm">Win Rate</span>
+                    <span class="text-xl md:text-2xl">📊</span>
+                </div>
+                <p id="userRatio" class="font-orbitron text-xl md:text-2xl font-bold text-[var(--color-purple-neon)] animate-number">0%</p>
+                <p class="text-xs text-[var(--color-text-tertiary)] mt-1">Ratio victoire</p>
+            </div>
+
+            <div class="glass-card rounded-xl p-4 md:p-6 animate-fade-in-up" style="animation-delay: 0.5s">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-[var(--color-text-secondary)] text-sm">Série</span>
+                    <span class="text-xl md:text-2xl">🔥</span>
+                </div>
+                <p id="userStreak" class="font-orbitron text-xl md:text-2xl font-bold text-[var(--color-gold)] animate-number">0</p>
+                <p class="text-xs text-[var(--color-text-tertiary)] mt-1">Victoires consécutives</p>
+            </div>
+
+            <div class="glass-card rounded-xl p-4 md:p-6 animate-fade-in-up" style="animation-delay: 0.6s">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-[var(--color-text-secondary)] text-sm">Classement Mondial</span>
+                    <span class="text-xl md:text-2xl">🌍</span>
+                </div>
+                <p id="worldRank" class="font-orbitron text-xl md:text-2xl font-bold text-[var(--color-blue-electric)] animate-number">#0</p>
+                <p class="text-xs text-[var(--color-text-tertiary)] mt-1">Position</p>
+            </div>
+
+            <div class="glass-card rounded-xl p-4 md:p-6 animate-fade-in-up" style="animation-delay: 0.7s">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-[var(--color-text-secondary)] text-sm">Classement National</span>
+                    <span class="text-xl md:text-2xl">🇨🇮</span>
+                </div>
+                <p id="nationalRank" class="font-orbitron text-xl md:text-2xl font-bold text-[var(--color-green)] animate-number">#0</p>
+                <p class="text-xs text-[var(--color-text-tertiary)] mt-1">Position</p>
+            </div>
+
+            <div class="glass-card rounded-xl p-4 md:p-6 animate-fade-in-up" style="animation-delay: 0.8s">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-[var(--color-text-secondary)] text-sm">Total Matchs</span>
+                    <span class="text-xl md:text-2xl">⚔️</span>
+                </div>
+                <p id="totalMatches" class="font-orbitron text-xl md:text-2xl font-bold text-[var(--color-cyan)] animate-number">0</p>
+                <p class="text-xs text-[var(--color-text-tertiary)] mt-1">Duels disputés</p>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="glass-card rounded-2xl p-6 md:p-8 mb-8 animate-fade-in-up" style="animation-delay: 0.9s">
+            <h2 class="font-orbitron text-xl md:text-2xl font-bold gradient-text mb-6">Actions rapides</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <a href="users-room.html" class="btn btn-primary btn-lg flex flex-col items-center gap-2">
+                    <span class="text-2xl">⚔️</span>
+                    <span>Créer un duel</span>
+                </a>
+                <a href="challenges.html" class="btn btn-success btn-lg flex flex-col items-center gap-2">
+                    <span class="text-2xl">🎮</span>
+                    <span>Rejoindre</span>
+                </a>
+                <a href="wallet.html" class="btn btn-gold btn-lg flex flex-col items-center gap-2">
+                    <span class="text-2xl">💰</span>
+                    <span>Déposer</span>
+                </a>
+                <a href="wallet.html" class="btn btn-outline btn-lg flex flex-col items-center gap-2">
+                    <span class="text-2xl">💸</span>
+                    <span>Retirer</span>
+                </a>
+                <a href="ranking.html" class="btn btn-primary btn-lg flex flex-col items-center gap-2">
+                    <span class="text-2xl">🏆</span>
+                    <span>Classement</span>
+                </a>
+                <a href="tournaments.html" class="btn btn-gold btn-lg flex flex-col items-center gap-2">
+                    <span class="text-2xl">🏅</span>
+                    <span>Tournois</span>
+                </a>
+                <a href="notifications.html" class="btn btn-outline btn-lg flex flex-col items-center gap-2 relative">
+                    <span class="text-2xl">🔔</span>
+                    <span>Notifications</span>
+                    <span id="notificationBadge" class="hidden absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full text-xs flex items-center justify-center">0</span>
+                </a>
+                <a href="wallet.html" class="btn btn-ghost btn-lg flex flex-col items-center gap-2">
+                    <span class="text-2xl">💼</span>
+                    <span>Portefeuille</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Recent Duels -->
+        <div class="glass-card rounded-2xl p-6 md:p-8 mb-8 animate-fade-in-up" style="animation-delay: 1s">
+            <h2 class="font-orbitron text-xl md:text-2xl font-bold gradient-text mb-6">Derniers duels</h2>
+            <div id="recentDuels" class="space-y-4">
+                <p class="text-[var(--color-text-secondary)] text-center py-8">Chargement...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 z-50 glass-dark md:hidden">
+        <div class="flex items-center justify-around py-3 border-t border-[var(--color-border-primary)]">
+            <a href="dashboard.html" class="flex flex-col items-center gap-1 text-[var(--color-cyan)]">
+                <span class="text-xl">🏠</span>
+                <span class="text-xs">Accueil</span>
+            </a>
+            <a href="users-room.html" class="flex flex-col items-center gap-1 text-[var(--color-text-secondary)]">
+                <span class="text-xl">👥</span>
+                <span class="text-xs">Joueurs</span>
+            </a>
+            <a href="challenges.html" class="flex flex-col items-center gap-1 text-[var(--color-text-secondary)]">
+                <span class="text-xl">⚔️</span>
+                <span class="text-xs">Défis</span>
+            </a>
+            <a href="wallet.html" class="flex flex-col items-center gap-1 text-[var(--color-text-secondary)]">
+                <span class="text-xl">💰</span>
+                <span class="text-xs">Portefeuille</span>
+            </a>
+            <a href="profile.html" class="flex flex-col items-center gap-1 text-[var(--color-text-secondary)]">
+                <span class="text-xl">👤</span>
+                <span class="text-xs">Profil</span>
+            </a>
+        </div>
+    </nav>
+
+    <script>
+        // Menu toggle functionality
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        hamburgerBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!hamburgerBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+                mobileMenu.classList.add('hidden');
+            }
+        });
+
+        // Check auth status
+        async function checkAuth() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            
+            if (!session) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Load user profile
+            const { data: profile } = await supabaseClient
+                .from('profiles')
+                .select('*')
+                .eq('id', session.user.id)
+                .single();
+
+            if (profile) {
+                // Update welcome header
+                document.getElementById('menuUsername').textContent = profile.username;
+                document.getElementById('welcomeUsername').textContent = profile.username;
+                document.getElementById('welcomeAvatar').textContent = profile.username.substring(0, 2).toUpperCase();
+                
+                // Calculate level and XP
+                const level = calculateLevel(profile.total_wins);
+                const currentXP = profile.total_wins * 10;
+                const nextLevelXP = (level + 1) * 100;
+                const xpProgress = (currentXP / nextLevelXP) * 100;
+                
+                document.getElementById('welcomeLevel').textContent = level;
+                document.getElementById('currentXP').textContent = currentXP;
+                document.getElementById('nextLevelXP').textContent = nextLevelXP;
+                document.getElementById('xpProgressBar').style.width = `${xpProgress}%`;
+
+                // Update stats with animation
+                animateNumber('userBalance', profile.balance);
+                animateNumber('userWins', profile.total_wins);
+                animateNumber('userLosses', profile.total_losses);
+                animateNumber('userStreak', calculateStreak(profile.total_wins, profile.total_losses));
+                animateNumber('totalMatches', profile.total_wins + profile.total_losses + profile.total_draws);
+                
+                const total = profile.total_wins + profile.total_losses + profile.total_draws;
+                const ratio = total > 0 ? Math.round((profile.total_wins / total) * 100) : 0;
+                document.getElementById('userRatio').textContent = `${ratio}%`;
+
+                // Calculate rankings (mock data for now)
+                document.getElementById('worldRank').textContent = `#${Math.floor(Math.random() * 1000) + 1}`;
+                document.getElementById('nationalRank').textContent = `#${Math.floor(Math.random() * 100) + 1}`;
+
+                // Check if admin
+                const { data: isAdmin } = await supabaseClient
+                    .from('admin_users')
+                    .select('*')
+                    .eq('id', session.user.id)
+                    .single();
+
+                if (isAdmin) {
+                    document.getElementById('adminLink').classList.remove('hidden');
+                }
+
+                // Load notification count
+                const { data: notifications } = await supabaseClient
+                    .from('notifications')
+                    .select('id')
+                    .eq('user_id', session.user.id)
+                    .eq('is_read', false);
+
+                if (notifications && notifications.length > 0) {
+                    const badge = document.getElementById('notificationBadge');
+                    badge.textContent = notifications.length;
+                    badge.classList.remove('hidden');
+                }
+
+                // Load recent duels
+                loadRecentDuels(session.user.id);
+            }
+        }
+
+        // Calculate level based on wins
+        function calculateLevel(wins) {
+            return Math.floor(wins / 5) + 1;
+        }
+
+        // Calculate win streak (simplified)
+        function calculateStreak(wins, losses) {
+            return Math.min(wins, 10);
+        }
+
+        // Animate number increment
+        function animateNumber(elementId, targetValue) {
+            const element = document.getElementById(elementId);
+            const duration = 1000;
+            const steps = 30;
+            const stepValue = targetValue / steps;
+            let currentValue = 0;
+            let step = 0;
+
+            const timer = setInterval(() => {
+                step++;
+                currentValue = Math.min(Math.round(stepValue * step), targetValue);
+                element.textContent = currentValue.toLocaleString();
+                
+                if (step >= steps) {
+                    clearInterval(timer);
+                    element.textContent = targetValue.toLocaleString();
+                }
+            }, duration / steps);
+        }
+
+        // Load recent duels
+        async function loadRecentDuels(userId) {
+            const { data: duels } = await supabaseClient
+                .from('duels')
+                .select(`
+                    *,
+                    creator:profiles!duels_creator_id_fkey(username),
+                    challenger:profiles!duels_challenger_id_fkey(username)
+                `)
+                .or(`creator_id.eq.${userId},challenger_id.eq.${userId}`)
+                .in('status', ['pending', 'accepted', 'completed'])
+                .order('created_at', { ascending: false })
+                .limit(5);
+
+            const container = document.getElementById('recentDuels');
+            
+            if (!duels || duels.length === 0) {
+                container.innerHTML = '<p class="text-[var(--color-text-secondary)] text-center py-8">Aucun duel récent</p>';
+                return;
+            }
+
+            container.innerHTML = duels.map(duel => {
+                const opponent = duel.creator_id === userId ? duel.challenger : duel.creator;
+                const isWin = duel.status === 'completed' && duel.winner_id === userId;
+                const isLoss = duel.status === 'completed' && duel.winner_id !== userId;
+                
+                return `
+                    <div class="glass-card rounded-xl p-4 flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-[var(--color-cyan)] to-[var(--color-purple-neon)] flex items-center justify-center">
+                                <span class="font-orbitron font-bold">${opponent?.username?.substring(0, 2).toUpperCase() || '??'}</span>
+                            </div>
+                            <div>
+                                <p class="font-semibold">${opponent?.username || 'Inconnu'}</p>
+                                <p class="text-sm text-[var(--color-text-secondary)]">${new Date(duel.created_at).toLocaleDateString('fr-FR')}</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            ${isWin ? '<span class="badge badge-success">Victoire</span>' : ''}
+                            ${isLoss ? '<span class="badge badge-danger">Défaite</span>' : ''}
+                            ${duel.status === 'pending' ? '<span class="badge badge-warning">En attente</span>' : ''}
+                            ${duel.status === 'accepted' ? '<span class="badge badge-info">En cours</span>' : ''}
+                            <p class="text-sm mt-1 font-orbitron ${isWin ? 'text-[var(--color-green)]' : isLoss ? 'text-[var(--color-red)]' : 'text-[var(--color-cyan)]'}">
+                                ${isWin ? '+' : isLoss ? '-' : ''}${duel.amount.toLocaleString()} FCFA
+                            </p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Logout
+        document.getElementById('logoutBtn')?.addEventListener('click', async () => {
+            await supabaseClient.auth.signOut();
+            window.location.href = 'index.html';
+        });
+
+        checkAuth();
+    </script>
+</body>
+</html>

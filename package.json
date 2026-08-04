@@ -1,0 +1,14 @@
+{
+  "name": "efootball-quiperd",
+  "version": "1.0.0",
+  "scripts": {
+    "build-css": "node build-css.js"
+  },
+  "dependencies": {
+    "pg": "^8.11.3"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.1",
+    "postcss": "^8.4.35"
+  }
+}

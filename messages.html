@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages - QUIPERD</title>
+    <link rel="stylesheet" href="output.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const { createClient } = supabase;
+        const supabaseClient = createClient('https://ablgizyhsrxeyiqlwedk.supabase.co', 'sb_publishable_naBMhihexjfObenhOLfS7A_je5U9adw');
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="bg-[var(--color-bg-primary)] min-h-screen pb-20 md:pb-0">
+    <!-- Menu Hamburger pour connectés -->
+    <nav class="fixed top-0 left-0 right-0 z-50 glass-dark border-b border-[var(--color-border-primary)]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <a href="dashboard.html" class="font-orbitron text-2xl font-bold gradient-text">QUIPERD</a>
+                </div>
+                <button id="hamburgerBtn" class="p-2 rounded-lg hover:bg-white/10 transition-colors">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div id="mobileMenu" class="hidden glass-dark border-t border-[var(--color-border-primary)]">
+            <div class="px-4 py-6 space-y-4">
+                <div class="px-4 py-3 bg-[var(--color-bg-tertiary)] rounded-lg">
+                    <p class="text-[var(--color-text-secondary)] text-sm">Connecté en tant que</p>
+                    <p id="menuUsername" class="font-orbitron font-bold text-white">Utilisateur</p>
+                </div>
+                
+                <a href="dashboard.html" class="block px-4 py-3 rounded-lg bg-[var(--color-bg-tertiary)] hover:bg-white/10 transition-colors text-white">
+                    🏠 Accueil
+                </a>
+                <a href="users-room.html" class="block px-4 py-3 rounded-lg bg-[var(--color-bg-tertiary)] hover:bg-white/10 transition-colors text-white">
+                    👥 Salle des Utilisateurs
+                </a>
+                <a href="challenges.html" class="block px-4 py-3 rounded-lg bg-[var(--color-bg-tertiary)] hover:bg-white/10 transition-colors text-white">
+                    ⚔️ Salle des Défis
+                </a>
+                <a href="wallet.html" class="block px-4 py-3 rounded-lg bg-[var(--color-bg-tertiary)] hover:bg-white/10 transition-colors text-white">
+                    💰 Portefeuille
+                </a>
+                <a href="ranking.html" class="block px-4 py-3 rounded-lg bg-[var(--color-bg-tertiary)] hover:bg-white/10 transition-colors text-white">
+                    🏆 Classement
+                </a>
+                <a href="tournaments.html" class="block px-4 py-3 rounded-lg bg-[var(--color-bg-tertiary)] hover:bg-white/10 transition-colors text-white">
+                    🎮 Tournois
+                </a>
+                <a href="profile.html" class="block px-4 py-3 rounded-lg bg-[var(--color-bg-tertiary)] hover:bg-white/10 transition-colors text-white">
+                    👤 Profil
+                </a>
+                <a href="notifications.html" class="block px-4 py-3 rounded-lg bg-[var(--color-bg-tertiary)] hover:bg-white/10 transition-colors text-white relative">
+                    🔔 Notifications
+                    <span id="notificationBadge" class="hidden absolute right-4 top-1/2 -translate-y-1/2 bg-[var(--color-red)] text-white text-xs px-2 py-1 rounded-full">0</span>
+                </a>
+                <a href="history.html" class="block px-4 py-3 rounded-lg bg-[var(--color-bg-tertiary)] hover:bg-white/10 transition-colors text-white">
+                    📜 Historique
+                </a>
+                <a href="messages.html" class="block px-4 py-3 rounded-lg bg-[var(--color-cyan)]/20 hover:bg-[var(--color-cyan)]/30 transition-colors text-white">
+                    💬 Messages
+                </a>
+                <a href="admin.html" id="adminLink" class="hidden block px-4 py-3 rounded-lg bg-[var(--color-red)]/20 hover:bg-[var(--color-red)]/30 transition-colors text-[var(--color-red)]">
+                    ⚙️ Administration
+                </a>
+                
+                <button id="logoutBtn" class="block w-full px-4 py-3 rounded-lg bg-[var(--color-red)]/20 hover:bg-[var(--color-red)]/30 transition-colors text-[var(--color-red)] font-semibold text-left">
+                    🚪 Déconnexion
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenu principal -->
+    <main class="max-w-7xl mx-auto px-4 py-6 md:py-12">
+        <!-- Header -->
+        <div class="text-center mb-8 animate-fade-in-up">
+            <h1 class="font-orbitron text-3xl md:text-4xl font-bold gradient-text mb-2">Messages</h1>
+            <p class="text-[var(--color-text-secondary)]">Communiquez avec les autres joueurs</p>
+        </div>
+
+        <!-- Messages Container -->
+        <div class="glass-card rounded-2xl p-6 md:p-8 animate-fade-in-up" style="animation-delay: 0.1s">
+            <div id="messagesContainer" class="space-y-4">
+                <p class="text-[var(--color-text-secondary)] text-center py-8">Chargement...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 z-50 glass-dark md:hidden">
+        <div class="flex items-center justify-around py-3 border-t border-[var(--color-border-primary)]">
+            <a href="dashboard.html" class="flex flex-col items-center gap-1 text-[var(--color-text-secondary)]">
+                <span class="text-xl">🏠</span>
+                <span class="text-xs">Accueil</span>
+            </a>
+            <a href="users-room.html" class="flex flex-col items-center gap-1 text-[var(--color-text-secondary)]">
+                <span class="text-xl">👥</span>
+                <span class="text-xs">Joueurs</span>
+            </a>
+            <a href="challenges.html" class="flex flex-col items-center gap-1 text-[var(--color-text-secondary)]">
+                <span class="text-xl">⚔️</span>
+                <span class="text-xs">Défis</span>
+            </a>
+            <a href="wallet.html" class="flex flex-col items-center gap-1 text-[var(--color-text-secondary)]">
+                <span class="text-xl">💰</span>
+                <span class="text-xs">Portefeuille</span>
+            </a>
+            <a href="messages.html" class="flex flex-col items-center gap-1 text-[var(--color-cyan)]">
+                <span class="text-xl">💬</span>
+                <span class="text-xs">Messages</span>
+            </a>
+        </div>
+    </nav>
+
+    <script>
+        // Menu toggle functionality
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        hamburgerBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!hamburgerBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+                mobileMenu.classList.add('hidden');
+            }
+        });
+
+        // Check auth status
+        async function checkAuth() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            
+            if (!session) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            const { data: profile } = await supabaseClient
+                .from('profiles')
+                .select('*')
+                .eq('id', session.user.id)
+                .single();
+
+            if (profile) {
+                document.getElementById('menuUsername').textContent = profile.username;
+
+                const { data: isAdmin } = await supabaseClient
+                    .from('admin_users')
+                    .select('*')
+                    .eq('id', session.user.id)
+                    .single();
+
+                if (isAdmin) {
+                    document.getElementById('adminLink').classList.remove('hidden');
+                }
+
+                const { data: notifications } = await supabaseClient
+                    .from('notifications')
+                    .select('id')
+                    .eq('user_id', session.user.id)
+                    .eq('is_read', false);
+
+                if (notifications && notifications.length > 0) {
+                    const badge = document.getElementById('notificationBadge');
+                    badge.textContent = notifications.length;
+                    badge.classList.remove('hidden');
+                }
+
+                loadMessages(session.user.id);
+            }
+        }
+
+        // Load messages
+        async function loadMessages(userId) {
+            const container = document.getElementById('messagesContainer');
+            
+            // Placeholder for messages functionality
+            container.innerHTML = `
+                <div class="text-center py-12">
+                    <div class="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-[var(--color-cyan)] to-[var(--color-purple-neon)] flex items-center justify-center mb-4 animate-float">
+                        <span class="text-4xl">💬</span>
+                    </div>
+                    <h3 class="font-orbitron text-xl font-bold mb-2">Système de messages</h3>
+                    <p class="text-[var(--color-text-secondary)] mb-4">Le système de messagerie sera bientôt disponible.</p>
+                    <p class="text-[var(--color-text-secondary)] text-sm">Vous pourrez communiquer directement avec les autres joueurs pour organiser vos duels.</p>
+                </div>
+            `;
+        }
+
+        // Logout
+        document.getElementById('logoutBtn')?.addEventListener('click', async () => {
+            await supabaseClient.auth.signOut();
+            window.location.href = 'index.html';
+        });
+
+        checkAuth();
+    </script>
+</body>
+</html>

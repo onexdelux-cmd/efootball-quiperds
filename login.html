@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - QUIPERD</title>
+    <link rel="stylesheet" href="output.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const { createClient } = supabase;
+        const supabaseClient = createClient('https://ablgizyhsrxeyiqlwedk.supabase.co', 'sb_publishable_naBMhihexjfObenhOLfS7A_je5U9adw');
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+        
+        .font-orbitron {
+            font-family: 'Orbitron', sans-serif;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #00d4ff 0%, #7b2ff7 50%, #ff006e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #00d4ff 0%, #7b2ff7 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
+        }
+        
+        .neon-border {
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.2), inset 0 0 20px rgba(0, 212, 255, 0.05);
+        }
+    </style>
+</head>
+<body class="pt-16">
+    <!-- Menu Hamburger pour non-connectés -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-lg border-b border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <a href="index.html" class="font-orbitron text-2xl font-bold gradient-text">QUIPERD</a>
+                </div>
+                <button id="hamburgerBtn" class="p-2 rounded-lg hover:bg-white/10 transition-colors">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div id="mobileMenu" class="hidden bg-black/95 border-t border-gray-800">
+            <div class="px-4 py-6 space-y-4">
+                <a href="collection.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white font-semibold">
+                    🎮 Collection
+                </a>
+                <a href="login.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white font-semibold">
+                    🔐 Connexion
+                </a>
+                <a href="login.html#register" class="block px-4 py-3 rounded-lg btn-primary text-white font-semibold text-center">
+                    ✨ Inscription
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenu principal -->
+    <main class="min-h-screen flex items-center justify-center px-4 py-12">
+        <div class="max-w-md w-full">
+            <!-- Login Form -->
+            <div id="loginForm" class="glass-card rounded-2xl p-8 neon-border">
+                <div class="text-center mb-8">
+                    <h1 class="font-orbitron text-3xl font-bold gradient-text mb-2">Connexion</h1>
+                    <p class="text-gray-400">Connectez-vous à votre compte QUIPERD</p>
+                </div>
+                
+                <form id="loginFormElement" class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Email</label>
+                        <input type="email" required class="w-full px-4 py-3 bg-white/5 border border-gray-700 rounded-lg focus:outline-none focus:border-cyan-500 transition-colors" placeholder="votre@email.com">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Mot de passe</label>
+                        <input type="password" required class="w-full px-4 py-3 bg-white/5 border border-gray-700 rounded-lg focus:outline-none focus:border-cyan-500 transition-colors" placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="btn-primary w-full py-3 rounded-lg font-semibold text-white">
+                        Se connecter
+                    </button>
+                </form>
+                
+                <div class="mt-6 text-center">
+                    <p class="text-gray-400">Pas encore de compte?</p>
+                    <a href="#register" class="text-cyan-400 font-semibold hover:underline">S'inscrire</a>
+                </div>
+            </div>
+
+            <!-- Register Form -->
+            <div id="registerForm" class="glass-card rounded-2xl p-8 neon-border hidden">
+                <div class="text-center mb-8">
+                    <h1 class="font-orbitron text-3xl font-bold gradient-text mb-2">Inscription</h1>
+                    <p class="text-gray-400">Créez votre compte QUIPERD</p>
+                </div>
+                
+                <form id="registerFormElement" class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Nom d'utilisateur</label>
+                        <input type="text" required class="w-full px-4 py-3 bg-white/5 border border-gray-700 rounded-lg focus:outline-none focus:border-cyan-500 transition-colors" placeholder="Votre pseudo">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Email</label>
+                        <input type="email" required class="w-full px-4 py-3 bg-white/5 border border-gray-700 rounded-lg focus:outline-none focus:border-cyan-500 transition-colors" placeholder="votre@email.com">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Mot de passe</label>
+                        <input type="password" required class="w-full px-4 py-3 bg-white/5 border border-gray-700 rounded-lg focus:outline-none focus:border-cyan-500 transition-colors" placeholder="••••••••">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Confirmer le mot de passe</label>
+                        <input type="password" required class="w-full px-4 py-3 bg-white/5 border border-gray-700 rounded-lg focus:outline-none focus:border-cyan-500 transition-colors" placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="btn-primary w-full py-3 rounded-lg font-semibold text-white">
+                        S'inscrire
+                    </button>
+                </form>
+                
+                <div class="mt-6 text-center">
+                    <p class="text-gray-400">Déjà inscrit?</p>
+                    <a href="#" onclick="showLogin()" class="text-cyan-400 font-semibold hover:underline">Se connecter</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Menu toggle functionality
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        hamburgerBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!hamburgerBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+                mobileMenu.classList.add('hidden');
+            }
+        });
+
+        // Check URL hash for register
+        if (window.location.hash === '#register') {
+            showRegister();
+        }
+
+        function showLogin() {
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('registerForm').classList.add('hidden');
+            window.location.hash = '';
+        }
+
+        function showRegister() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.remove('hidden');
+        }
+
+        // Handle login
+        document.getElementById('loginFormElement').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = e.target.querySelector('input[type="email"]').value;
+            const password = e.target.querySelector('input[type="password"]').value;
+            
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            
+            if (error) {
+                alert('Erreur de connexion: ' + error.message);
+            } else {
+                window.location.href = 'dashboard.html';
+            }
+        });
+
+        // Handle register
+        document.getElementById('registerFormElement').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = e.target.querySelector('input[type="text"]').value;
+            const email = e.target.querySelector('input[type="email"]').value;
+            const password = e.target.querySelectorAll('input[type="password"]')[0].value;
+            const confirmPassword = e.target.querySelectorAll('input[type="password"]')[1].value;
+            
+            if (password !== confirmPassword) {
+                alert('Les mots de passe ne correspondent pas');
+                return;
+            }
+            
+            const { data, error } = await supabaseClient.auth.signUp({
+                email,
+                password,
+                options: { data: { username } }
+            });
+            
+            if (error) {
+                alert('Erreur d\'inscription: ' + error.message);
+            } else {
+                alert('Inscription réussie! Veuillez vérifier votre email.');
+                window.location.href = 'dashboard.html';
+            }
+        });
+
+        // Check auth and redirect if logged in
+        async function checkAuth() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) {
+                window.location.href = 'dashboard.html';
+            }
+        }
+
+        checkAuth();
+    </script>
+</body>
+</html>
