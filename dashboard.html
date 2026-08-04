@@ -374,9 +374,9 @@
                 const ratio = total > 0 ? Math.round((profile.total_wins / total) * 100) : 0;
                 document.getElementById('userRatio').textContent = `${ratio}%`;
 
-                // Calculate rankings (mock data for now)
-                document.getElementById('worldRank').textContent = `#${Math.floor(Math.random() * 1000) + 1}`;
-                document.getElementById('nationalRank').textContent = `#${Math.floor(Math.random() * 100) + 1}`;
+                // Rankings will be calculated when ranking system is implemented
+                document.getElementById('worldRank').textContent = `#0`;
+                document.getElementById('nationalRank').textContent = `#0`;
 
                 // Check if admin
                 const { data: isAdmin } = await supabaseClient

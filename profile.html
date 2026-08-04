@@ -147,23 +147,23 @@
                 <div class="space-y-4">
                     <div class="flex justify-between items-center">
                         <span class="text-[var(--color-text-secondary)]">Temps de jeu</span>
-                        <span class="font-semibold">12h 35m</span>
+                        <span class="font-semibold" id="playTime">0h 0m</span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-[var(--color-text-secondary)]">Total gagné</span>
-                        <span class="font-semibold text-[var(--color-green)]">50,000 FCFA</span>
+                        <span class="font-semibold text-[var(--color-green)]" id="totalWon">0 FCFA</span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-[var(--color-text-secondary)]">Total perdu</span>
-                        <span class="font-semibold text-[var(--color-red)]">20,000 FCFA</span>
+                        <span class="font-semibold text-[var(--color-red)]" id="totalLost">0 FCFA</span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-[var(--color-text-secondary)]">Bénéfice</span>
-                        <span class="font-semibold text-[var(--color-green)]">30,000 FCFA</span>
+                        <span class="font-semibold text-[var(--color-green)]" id="netProfit">0 FCFA</span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-[var(--color-text-secondary)]">Meilleure série</span>
-                        <span class="font-semibold text-[var(--color-gold)]">5 victoires</span>
+                        <span class="font-semibold text-[var(--color-gold)]" id="bestStreak">0 victoires</span>
                     </div>
                 </div>
             </div>
@@ -305,6 +305,13 @@
                 if (isAdmin) {
                     document.getElementById('adminLink').classList.remove('hidden');
                 }
+
+                // Load detailed stats
+                document.getElementById('totalWon').textContent = `${profile.total_earned.toLocaleString()} FCFA`;
+                document.getElementById('totalLost').textContent = '0 FCFA';
+                document.getElementById('netProfit').textContent = `${profile.total_earned.toLocaleString()} FCFA`;
+                document.getElementById('bestStreak').textContent = `${profile.total_wins} victoires`;
+                document.getElementById('playTime').textContent = '0h 0m';
 
                 loadRecentMatches(session.user.id);
                 loadBadges(session.user.id, profile);
