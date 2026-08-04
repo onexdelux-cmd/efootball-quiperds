@@ -25,7 +25,7 @@ CREATE TABLE profiles (
     username TEXT UNIQUE NOT NULL,
     full_name TEXT,
     bio TEXT,
-    country TEXT DEFAULT 'Cameroun',
+    country TEXT DEFAULT 'Unknown',
     console TEXT DEFAULT 'PS5',
     avatar_url TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()) NOT NULL,
