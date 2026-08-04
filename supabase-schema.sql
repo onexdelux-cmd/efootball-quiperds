@@ -202,9 +202,6 @@ CREATE POLICY "Users can insert own transactions" ON transactions
 CREATE OR REPLACE FUNCTION handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-    -- Temporarily disable RLS for this operation
-    SET LOCAL session_replication_role = 'replica';
-    
     INSERT INTO profiles (id, username, full_name, avatar_url)
     VALUES (
         NEW.id,
@@ -213,6 +210,11 @@ BEGIN
         NEW.raw_user_meta_data->>'avatar_url'
     );
     RETURN NEW;
+EXCEPTION
+    WHEN OTHERS THEN
+        -- Log error but don't block signup
+        RAISE LOG 'Error creating profile for user %: %', NEW.id, SQLERRM;
+        RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
