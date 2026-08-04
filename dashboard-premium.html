@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de bord - QUIPERD</title>
+    <link rel="stylesheet" href="styles/premium-design.css">
+    <link rel="stylesheet" href="output.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const { createClient } = supabase;
+        const supabaseClient = createClient('https://ablgizyhsrxeyiqlwedk.supabase.co', 'sb_publishable_naBMhihexjfObenhOLfS7A_je5U9adw');
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+        
+        @media (min-width: 768px) {
+            body {
+                padding-bottom: 0;
+            }
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .welcome-section {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(123, 47, 247, 0.1) 100%);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-2xl);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .welcome-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--color-cyan), var(--color-violet), var(--color-magenta));
+        }
+        
+        .xp-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+        
+        .xp-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--color-cyan), var(--color-violet));
+            border-radius: var(--radius-full);
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px var(--color-cyan-glow);
+        }
+        
+        .duel-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            transition: all var(--transition-normal);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .duel-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--color-cyan), var(--color-violet));
+            opacity: 0;
+            transition: opacity var(--transition-normal);
+        }
+        
+        .duel-card:hover::before {
+            opacity: 1;
+        }
+        
+        .duel-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-pending {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+        
+        .status-accepted {
+            background: rgba(0, 212, 255, 0.2);
+            color: var(--color-cyan);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+        }
+        
+        .status-completed {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+        
+        .quick-action-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 1.5rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            color: #ffffff;
+            font-weight: 500;
+            transition: all var(--transition-normal);
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        .quick-action-btn:hover {
+            background: var(--glass-bg-hover);
+            border-color: var(--color-cyan);
+            transform: translateY(-2px);
+        }
+        
+        .quick-action-btn .icon {
+            font-size: 1.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .welcome-section {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav-glass fixed top-0 left-0 right-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <a href="dashboard.html" class="font-orbitron text-2xl font-bold gradient-text">QUIPERD</a>
+                </div>
+                <button id="hamburgerBtn" class="p-2 rounded-lg hover:bg-white/10 transition-colors">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div id="mobileMenu" class="hidden bg-black/95 border-t border-gray-800">
+            <div class="px-4 py-6 space-y-4">
+                <div class="px-4 py-3 bg-white/5 rounded-lg">
+                    <p class="text-gray-400 text-sm">Connecté en tant que</p>
+                    <p id="menuUsername" class="font-orbitron font-bold text-white">Utilisateur</p>
+                </div>
+                
+                <a href="dashboard.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white">
+                    🏠 Accueil
+                </a>
+                <a href="users-room.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white">
+                    👥 Salle des Utilisateurs
+                </a>
+                <a href="challenges.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white">
+                    ⚔️ Salle des Défis
+                </a>
+                <a href="wallet.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white">
+                    💰 Portefeuille
+                </a>
+                <a href="ranking.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white">
+                    🏆 Classement
+                </a>
+                <a href="history.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white">
+                    📜 Historique
+                </a>
+                <a href="profile.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white">
+                    👤 Mon Compte
+                </a>
+                
+                <a href="notifications.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white relative">
+                    🔔 Notifications
+                    <span id="notificationBadge" class="hidden absolute right-4 top-3 w-5 h-5 bg-red-500 rounded-full text-xs flex items-center justify-center">0</span>
+                </a>
+                
+                <a href="admin.html" id="adminLink" class="hidden block px-4 py-3 rounded-lg bg-red-500/20 hover:bg-red-500/30 transition-colors text-red-400">
+                    🛡️ Administration
+                </a>
+                
+                <button id="logoutBtn" class="block w-full px-4 py-3 rounded-lg bg-red-500/20 hover:bg-red-500/30 transition-colors text-red-400 font-semibold text-left">
+                    🚪 Déconnexion
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 py-6 md:py-12">
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <div class="flex flex-col md:flex-row items-center gap-6">
+                <div class="relative">
+                    <div class="avatar avatar-xl">
+                        <span id="welcomeAvatar">U</span>
+                    </div>
+                    <div class="absolute bottom-0 right-0 w-5 h-5 bg-green-400 rounded-full border-2 border-black animate-pulse"></div>
+                </div>
+                <div class="flex-1 text-center md:text-left">
+                    <h1 class="font-orbitron text-2xl md:text-3xl font-bold gradient-text mb-2">
+                        Bienvenue, <span id="welcomeUsername">Joueur</span>!
+                    </h1>
+                    <div class="flex flex-wrap items-center justify-center md:justify-start gap-4 text-sm mb-4">
+                        <span class="status-badge status-accepted">Niveau <span id="welcomeLevel">1</span></span>
+                        <span class="text-gray-400">🇨🇮 Cameroun</span>
+                        <span class="text-green-400">● En ligne</span>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-gray-400">XP</span>
+                            <span class="text-cyan-400"><span id="currentXP">0</span> / <span id="nextLevelXP">100</span></span>
+                        </div>
+                        <div class="xp-bar">
+                            <div id="xpFill" class="xp-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="statBalance">0</div>
+                <div class="stat-label">Solde (FCFA)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statWins">0</div>
+                <div class="stat-label">Victoires</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statLosses">0</div>
+                <div class="stat-label">Défaites</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statEarned">0</div>
+                <div class="stat-label">Gagnés (FCFA)</div>
+            </div>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Active Duels -->
+            <div class="glass-card-premium">
+                <h2 class="font-orbitron text-xl font-bold mb-4 text-white">Duels Actifs</h2>
+                <div id="activeDuels" class="space-y-4">
+                    <p class="text-gray-400 text-center py-8">Aucun duel actif</p>
+                </div>
+                <a href="challenges.html" class="btn-primary w-full mt-4 text-center block">Voir tous les duels</a>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="glass-card-premium">
+                <h2 class="font-orbitron text-xl font-bold mb-4 text-white">Actions Rapides</h2>
+                <div class="space-y-3">
+                    <a href="challenges.html" class="quick-action-btn">
+                        <span class="icon">⚔️</span>
+                        <span>Créer un duel</span>
+                    </a>
+                    <a href="users-room.html" class="quick-action-btn">
+                        <span class="icon">👥</span>
+                        <span>Trouver des adversaires</span>
+                    </a>
+                    <a href="wallet.html" class="quick-action-btn">
+                        <span class="icon">💰</span>
+                        <span>Déposer de l'argent</span>
+                    </a>
+                    <a href="profile.html" class="quick-action-btn">
+                        <span class="icon">👤</span>
+                        <span>Mon profil</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="glass-card-premium">
+                <h2 class="font-orbitron text-xl font-bold mb-4 text-white">Activité Récente</h2>
+                <div id="recentActivity" class="space-y-4">
+                    <p class="text-gray-400 text-center py-8">Aucune activité récente</p>
+                </div>
+                <a href="history.html" class="btn-secondary w-full mt-4 text-center block">Voir l'historique</a>
+            </div>
+        </div>
+
+        <!-- Rankings Preview -->
+        <div class="glass-card-premium">
+            <h2 class="font-orbitron text-xl font-bold mb-4 text-white">Top Joueurs</h2>
+            <div id="topPlayers" class="space-y-3">
+                <p class="text-gray-400 text-center py-8">Chargement...</p>
+            </div>
+            <a href="ranking.html" class="btn-secondary w-full mt-4 text-center block">Voir le classement complet</a>
+        </div>
+    </main>
+
+    <script>
+        // Menu toggle functionality
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        hamburgerBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!hamburgerBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+                mobileMenu.classList.add('hidden');
+            }
+        });
+
+        // Logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await supabaseClient.auth.signOut();
+            window.location.href = 'index.html';
+        });
+
+        // Calculate level from wins
+        function calculateLevel(wins) {
+            return Math.floor(wins / 10) + 1;
+        }
+
+        // Load dashboard data
+        async function loadDashboard() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            
+            if (!session) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Load user profile
+            const { data: profile } = await supabaseClient
+                .from('profiles')
+                .select('*')
+                .eq('id', session.user.id)
+                .maybeSingle();
+
+            if (profile) {
+                document.getElementById('menuUsername').textContent = profile.username;
+                document.getElementById('welcomeUsername').textContent = profile.username;
+                document.getElementById('welcomeAvatar').textContent = profile.username.substring(0, 2).toUpperCase();
+                
+                const level = calculateLevel(profile.total_wins);
+                const currentXP = profile.total_wins * 10;
+                const nextLevelXP = level * 100;
+                
+                document.getElementById('welcomeLevel').textContent = level;
+                document.getElementById('currentXP').textContent = currentXP;
+                document.getElementById('nextLevelXP').textContent = nextLevelXP;
+                document.getElementById('xpFill').style.width = `${(currentXP / nextLevelXP) * 100}%`;
+                
+                document.getElementById('statBalance').textContent = profile.balance.toLocaleString();
+                document.getElementById('statWins').textContent = profile.total_wins;
+                document.getElementById('statLosses').textContent = profile.total_losses;
+                document.getElementById('statEarned').textContent = profile.total_earned.toLocaleString();
+            }
+
+            // Load active duels
+            const { data: duels } = await supabaseClient
+                .from('duels')
+                .select(`
+                    *,
+                    creator:profiles(username),
+                    challenger:profiles(username)
+                `)
+                .or(`creator_id.eq.${session.user.id},challenger_id.eq.${session.user.id}`)
+                .in('status', ['pending', 'accepted'])
+                .order('created_at', { ascending: false })
+                .limit(3);
+
+            if (duels && duels.length > 0) {
+                document.getElementById('activeDuels').innerHTML = duels.map(duel => `
+                    <div class="duel-card">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="avatar">${duel.creator.username.substring(0, 2).toUpperCase()}</div>
+                                <div>
+                                    <p class="font-semibold">${duel.creator.username}</p>
+                                    <p class="text-sm text-gray-400">vs ${duel.challenger?.username || 'En attente'}</p>
+                                </div>
+                            </div>
+                            <span class="duel-amount">${duel.amount.toLocaleString()} FCFA</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="status-badge ${duel.status === 'pending' ? 'status-pending' : 'status-accepted'}">
+                                ${duel.status === 'pending' ? 'En attente' : 'En cours'}
+                            </span>
+                            <a href="duel-room.html?id=${duel.id}" class="text-cyan-400 hover:underline text-sm">Voir →</a>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Load top players
+            const { data: topPlayers } = await supabaseClient
+                .from('profiles')
+                .select('*')
+                .order('total_wins', { ascending: false })
+                .limit(5);
+
+            if (topPlayers && topPlayers.length > 0) {
+                document.getElementById('topPlayers').innerHTML = topPlayers.map((player, index) => `
+                    <div class="flex items-center justify-between p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="font-orbitron font-bold ${index < 3 ? 'text-cyan-400' : 'text-gray-400'}">#${index + 1}</span>
+                            <div class="avatar">${player.username.substring(0, 2).toUpperCase()}</div>
+                            <span class="font-semibold">${player.username}</span>
+                        </div>
+                        <span class="text-green-400 font-orbitron font-bold">${player.total_wins}V</span>
+                    </div>
+                `).join('');
+            }
+
+            // Check if admin
+            const { data: isAdmin } = await supabaseClient
+                .from('admin_users')
+                .select('*')
+                .eq('id', session.user.id)
+                .maybeSingle();
+
+            if (isAdmin) {
+                document.getElementById('adminLink').classList.remove('hidden');
+            }
+
+            // Load notification count
+            const { data: notifications } = await supabaseClient
+                .from('notifications')
+                .select('id')
+                .eq('user_id', session.user.id)
+                .eq('is_read', false);
+
+            if (notifications && notifications.length > 0) {
+                const badge = document.getElementById('notificationBadge');
+                badge.textContent = notifications.length;
+                badge.classList.remove('hidden');
+            }
+        }
+
+        // Initialize
+        loadDashboard();
+    </script>
+</body>
+</html>

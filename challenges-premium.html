@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salle des Défis - QUIPERD</title>
+    <link rel="stylesheet" href="styles/premium-design.css">
+    <link rel="stylesheet" href="output.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const { createClient } = supabase;
+        const supabaseClient = createClient('https://ablgizyhsrxeyiqlwedk.supabase.co', 'sb_publishable_naBMhihexjfObenhOLfS7A_je5U9adw');
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+        
+        @media (min-width: 768px) {
+            body {
+                padding-bottom: 0;
+            }
+        }
+        
+        .duels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .players-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .duel-card-premium {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            transition: all var(--transition-normal);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .duel-card-premium::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--color-cyan), var(--color-violet), var(--color-magenta));
+            opacity: 0;
+            transition: opacity var(--transition-normal);
+        }
+        
+        .duel-card-premium:hover::before {
+            opacity: 1;
+        }
+        
+        .duel-card-premium:hover {
+            transform: translateY(-6px);
+            box-shadow: 
+                0 16px 48px rgba(0, 0, 0, 0.5),
+                0 0 40px rgba(0, 212, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .player-card-premium {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            text-align: center;
+            transition: all var(--transition-normal);
+        }
+        
+        .player-card-premium:hover {
+            transform: translateY(-4px);
+            border-color: var(--color-violet);
+            box-shadow: 0 12px 40px rgba(123, 47, 247, 0.2);
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--transition-normal);
+        }
+        
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, rgba(20, 20, 30, 0.95) 0%, rgba(10, 10, 20, 0.95) 100%);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-2xl);
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            transform: scale(0.9);
+            transition: transform var(--transition-normal);
+        }
+        
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+        
+        @media (max-width: 768px) {
+            .duels-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .players-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav-glass fixed top-0 left-0 right-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <a href="dashboard.html" class="font-orbitron text-2xl font-bold gradient-text">QUIPERD</a>
+                </div>
+                <button id="hamburgerBtn" class="p-2 rounded-lg hover:bg-white/10 transition-colors">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div id="mobileMenu" class="hidden bg-black/95 border-t border-gray-800">
+            <div class="px-4 py-6 space-y-4">
+                <div class="px-4 py-3 bg-white/5 rounded-lg">
+                    <p class="text-gray-400 text-sm">Connecté en tant que</p>
+                    <p id="menuUsername" class="font-orbitron font-bold text-white">Utilisateur</p>
+                </div>
+                
+                <a href="dashboard.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white">
+                    🏠 Accueil
+                </a>
+                <a href="users-room.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white">
+                    👥 Salle des Utilisateurs
+                </a>
+                <a href="challenges.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white">
+                    ⚔️ Salle des Défis
+                </a>
+                <a href="wallet.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white">
+                    💰 Portefeuille
+                </a>
+                <a href="ranking.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white">
+                    🏆 Classement
+                </a>
+                <a href="history.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white">
+                    📜 Historique
+                </a>
+                <a href="profile.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white">
+                    👤 Mon Compte
+                </a>
+                
+                <a href="notifications.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white relative">
+                    🔔 Notifications
+                    <span id="notificationBadge" class="hidden absolute right-4 top-3 w-5 h-5 bg-red-500 rounded-full text-xs flex items-center justify-center">0</span>
+                </a>
+                
+                <a href="admin.html" id="adminLink" class="hidden block px-4 py-3 rounded-lg bg-red-500/20 hover:bg-red-500/30 transition-colors text-red-400">
+                    🛡️ Administration
+                </a>
+                
+                <button id="logoutBtn" class="block w-full px-4 py-3 rounded-lg bg-red-500/20 hover:bg-red-500/30 transition-colors text-red-400 font-semibold text-left">
+                    🚪 Déconnexion
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 py-6 md:py-12">
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+            <div>
+                <h1 class="font-orbitron text-3xl md:text-4xl font-bold gradient-text mb-2">Salle des Défis</h1>
+                <p class="text-gray-400">Créez et acceptez des duels eFootball</p>
+            </div>
+            <button onclick="openCreateDuelModal()" class="btn-primary">
+                + Créer un duel
+            </button>
+        </div>
+
+        <!-- Available Duels -->
+        <div class="glass-card-premium mb-8">
+            <h2 class="font-orbitron text-xl md:text-2xl font-bold gradient-text mb-6">Duels disponibles</h2>
+            <div id="availableDuels" class="duels-grid">
+                <p class="text-gray-400 text-center py-8 col-span-full">Chargement...</p>
+            </div>
+        </div>
+
+        <!-- Players to Challenge -->
+        <div class="glass-card-premium">
+            <h2 class="font-orbitron text-xl md:text-2xl font-bold gradient-text mb-6">Joueurs disponibles</h2>
+            <div id="playersList" class="players-grid">
+                <p class="text-gray-400 text-center py-8 col-span-full">Chargement...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Create Duel Modal -->
+    <div id="createDuelModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="font-orbitron text-xl font-bold gradient-text">Créer un duel</h2>
+                <button onclick="closeCreateDuelModal()" class="text-gray-400 hover:text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <form id="createDuelForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-2">Mise (FCFA)</label>
+                    <input type="number" id="duelAmount" class="input-premium" placeholder="5000" min="200" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">Message (optionnel)</label>
+                    <textarea id="duelMessage" class="input-premium" rows="3" placeholder="Défie-moi sur eFootball!"></textarea>
+                </div>
+                <button type="submit" class="btn-primary w-full">Créer le duel</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Menu toggle functionality
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        hamburgerBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!hamburgerBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+                mobileMenu.classList.add('hidden');
+            }
+        });
+
+        // Logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await supabaseClient.auth.signOut();
+            window.location.href = 'index.html';
+        });
+
+        // Modal functions
+        function openCreateDuelModal() {
+            document.getElementById('createDuelModal').classList.add('active');
+        }
+
+        function closeCreateDuelModal() {
+            document.getElementById('createDuelModal').classList.remove('active');
+        }
+
+        // Load duels
+        async function loadDuels() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            
+            const { data: duels } = await supabaseClient
+                .from('duels')
+                .select(`
+                    *,
+                    creator:profiles(username)
+                `)
+                .in('status', ['pending', 'accepted'])
+                .neq('creator_id', session?.user.id)
+                .order('created_at', { ascending: false })
+                .limit(6);
+
+            if (duels && duels.length > 0) {
+                document.getElementById('availableDuels').innerHTML = duels.map(duel => `
+                    <div class="duel-card-premium">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-3">
+                                <div class="avatar">${duel.creator.username.substring(0, 2).toUpperCase()}</div>
+                                <div>
+                                    <p class="font-semibold">${duel.creator.username}</p>
+                                    <p class="text-sm text-gray-400">Défieur</p>
+                                </div>
+                            </div>
+                            <span class="duel-amount">${duel.amount.toLocaleString()} FCFA</span>
+                        </div>
+                        ${duel.message ? `<p class="text-sm text-gray-400 mb-4 italic">"${duel.message}"</p>` : ''}
+                        <div class="flex items-center justify-between">
+                            <span class="status-badge ${duel.status === 'pending' ? 'status-pending' : 'status-accepted'}">
+                                ${duel.status === 'pending' ? 'En attente' : 'En cours'}
+                            </span>
+                            <button onclick="acceptDuel('${duel.id}')" class="btn-primary text-sm px-4 py-2" ${duel.status !== 'pending' ? 'disabled' : ''}>
+                                ${duel.status === 'pending' ? 'Accepter' : 'Non disponible'}
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                document.getElementById('availableDuels').innerHTML = '<p class="text-gray-400 text-center py-8 col-span-full">Aucun duel disponible</p>';
+            }
+        }
+
+        // Load players
+        async function loadPlayers() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            
+            const { data: players } = await supabaseClient
+                .from('profiles')
+                .select('*')
+                .neq('id', session?.user.id)
+                .order('total_wins', { ascending: false })
+                .limit(8);
+
+            if (players && players.length > 0) {
+                document.getElementById('playersList').innerHTML = players.map(player => {
+                    const ratio = player.total_wins + player.total_losses + player.total_draws > 0 
+                        ? Math.round((player.total_wins / (player.total_wins + player.total_losses + player.total_draws)) * 100)
+                        : 0;
+                    
+                    return `
+                        <div class="player-card-premium">
+                            <div class="avatar avatar-large mb-3">${player.username.substring(0, 2).toUpperCase()}</div>
+                            <h3 class="font-orbitron font-bold mb-2">${player.username}</h3>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between text-gray-400">
+                                    <span>Victoires:</span>
+                                    <span class="text-green-400">${player.total_wins}</span>
+                                </div>
+                                <div class="flex justify-between text-gray-400">
+                                    <span>Défaites:</span>
+                                    <span class="text-red-400">${player.total_losses}</span>
+                                </div>
+                                <div class="flex justify-between text-gray-400">
+                                    <span>Ratio:</span>
+                                    <span class="text-cyan-400">%${ratio}</span>
+                                </div>
+                            </div>
+                            <button onclick="challengePlayer('${player.id}')" class="btn-primary w-full mt-4 text-sm">
+                                Défier
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                document.getElementById('playersList').innerHTML = '<p class="text-gray-400 text-center py-8 col-span-full">Aucun joueur disponible</p>';
+            }
+        }
+
+        // Accept duel
+        async function acceptDuel(duelId) {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            
+            const { error } = await supabaseClient
+                .from('duels')
+                .update({ 
+                    challenger_id: session.user.id,
+                    status: 'accepted'
+                })
+                .eq('id', duelId);
+            
+            if (error) {
+                alert('Erreur lors de l\'acceptation du duel: ' + error.message);
+            } else {
+                alert('Duel accepté! Redirection vers la salle de défi...');
+                window.location.href = `duel-room.html?id=${duelId}`;
+            }
+        }
+
+        // Challenge player
+        function challengePlayer(playerId) {
+            openCreateDuelModal();
+        }
+
+        // Create duel form
+        document.getElementById('createDuelForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            const amount = parseFloat(document.getElementById('duelAmount').value);
+            const message = document.getElementById('duelMessage').value;
+            
+            // Check balance
+            const { data: profile } = await supabaseClient
+                .from('profiles')
+                .select('balance')
+                .eq('id', session.user.id)
+                .maybeSingle();
+            
+            if (amount > profile.balance) {
+                alert('Solde insuffisant');
+                return;
+            }
+            
+            const { error } = await supabaseClient
+                .from('duels')
+                .insert({
+                    creator_id: session.user.id,
+                    amount: amount,
+                    message: message,
+                    status: 'pending'
+                });
+            
+            if (error) {
+                alert('Erreur lors de la création du duel: ' + error.message);
+            } else {
+                closeCreateDuelModal();
+                loadDuels();
+                alert('Duel créé avec succès!');
+            }
+        });
+
+        // Initialize
+        async function init() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            
+            if (!session) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            const { data: profile } = await supabaseClient
+                .from('profiles')
+                .select('*')
+                .eq('id', session.user.id)
+                .maybeSingle();
+
+            if (profile) {
+                document.getElementById('menuUsername').textContent = profile.username;
+            }
+
+            const { data: isAdmin } = await supabaseClient
+                .from('admin_users')
+                .select('*')
+                .eq('id', session.user.id)
+                .maybeSingle();
+
+            if (isAdmin) {
+                document.getElementById('adminLink').classList.remove('hidden');
+            }
+
+            loadDuels();
+            loadPlayers();
+        }
+
+        init();
+    </script>
+</body>
+</html>

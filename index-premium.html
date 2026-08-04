@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QUIPERD - Plateforme de Duels eFootball Premium</title>
+    <link rel="stylesheet" href="styles/premium-design.css">
+    <link rel="stylesheet" href="output.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const { createClient } = supabase;
+        const supabaseClient = createClient('https://ablgizyhsrxeyiqlwedk.supabase.co', 'sb_publishable_naBMhihexjfObenhOLfS7A_je5U9adw');
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: var(--bg-gradient);
+            min-height: 100vh;
+        }
+        
+        .hero-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, rgba(123, 47, 247, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 50% 100%, rgba(255, 0, 110, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .hero-title {
+            font-family: var(--font-orbitron);
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 900;
+            letter-spacing: 0.1em;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--color-cyan) 0%, var(--color-violet) 50%, var(--color-magenta) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient-shift 3s ease infinite;
+            background-size: 200% 200%;
+        }
+        
+        .hero-subtitle {
+            font-size: clamp(1rem, 2vw, 1.5rem);
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 2rem;
+            font-weight: 300;
+        }
+        
+        .hero-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.2) 0%, rgba(123, 47, 247, 0.2) 100%);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: var(--radius-full);
+            padding: 0.75rem 2rem;
+            margin-bottom: 3rem;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        
+        .hero-badge-text {
+            font-family: var(--font-orbitron);
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--color-cyan);
+            text-shadow: 0 0 10px var(--color-cyan-glow);
+        }
+        
+        .action-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        .action-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-2xl);
+            padding: 2.5rem;
+            text-align: center;
+            transition: all var(--transition-normal);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .action-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--color-cyan), var(--color-violet), var(--color-magenta));
+            opacity: 0;
+            transition: opacity var(--transition-normal);
+        }
+        
+        .action-card:hover::before {
+            opacity: 1;
+        }
+        
+        .action-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.5),
+                0 0 40px rgba(0, 212, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .action-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            background: linear-gradient(135deg, var(--color-cyan) 0%, var(--color-violet) 100%);
+            box-shadow: var(--shadow-neon-cyan);
+        }
+        
+        .action-card:nth-child(2) .action-icon {
+            background: linear-gradient(135deg, var(--color-violet) 0%, var(--color-magenta) 100%);
+            box-shadow: var(--shadow-neon-violet);
+        }
+        
+        .action-title {
+            font-family: var(--font-orbitron);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: #ffffff;
+        }
+        
+        .action-description {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 4rem auto 0;
+            padding: 0 1rem;
+        }
+        
+        .feature-item {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            text-align: center;
+            transition: all var(--transition-normal);
+        }
+        
+        .feature-item:hover {
+            background: var(--glass-bg-hover);
+            transform: translateY(-4px);
+            border-color: var(--color-cyan);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-title {
+            font-family: var(--font-orbitron);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #ffffff;
+        }
+        
+        .feature-text {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85rem;
+        }
+        
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 2rem 1rem;
+            }
+            
+            .action-cards {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .action-card {
+                padding: 2rem;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav-glass fixed top-0 left-0 right-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <a href="index.html" class="font-orbitron text-2xl font-bold gradient-text">QUIPERD</a>
+                </div>
+                <button id="hamburgerBtn" class="p-2 rounded-lg hover:bg-white/10 transition-colors">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div id="mobileMenu" class="hidden bg-black/95 border-t border-gray-800">
+            <div class="px-4 py-6 space-y-4">
+                <a href="collection.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white font-semibold">
+                    🎮 Collection
+                </a>
+                <a href="login.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white font-semibold">
+                    🔐 Connexion
+                </a>
+                <a href="login.html#register" class="block px-4 py-3 rounded-lg btn-primary text-white font-semibold text-center">
+                    ✨ Inscription
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title animate-float">QUIPERD</h1>
+            <p class="hero-subtitle">La plateforme ultime de duels eFootball</p>
+            
+            <div class="hero-badge animate-pulse-glow">
+                <span class="hero-badge-text">💰 Gagnez de l'argent en jouant</span>
+            </div>
+            
+            <div class="action-cards">
+                <!-- Collection Card -->
+                <div class="action-card" onclick="window.location.href='collection.html'">
+                    <div class="action-icon">
+                        <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                        </svg>
+                    </div>
+                    <h2 class="action-title">Collection</h2>
+                    <p class="action-description">Découvrez notre collection exclusive de joueurs et de cartes rares</p>
+                    <button class="btn-primary">Explorer</button>
+                </div>
+
+                <!-- Registration Card -->
+                <div class="action-card" onclick="window.location.href='login.html#register'">
+                    <div class="action-icon">
+                        <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                        </svg>
+                    </div>
+                    <h2 class="action-title">Inscription</h2>
+                    <p class="action-description">Créez votre compte et commencez à dominer les duels eFootball</p>
+                    <button class="btn-primary">S'inscrire</button>
+                </div>
+            </div>
+            
+            <!-- Features Grid -->
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">⚔️</div>
+                    <h3 class="feature-title">Duels en temps réel</h3>
+                    <p class="feature-text">Affrontez d'autres joueurs sur eFootball</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">💰</div>
+                    <h3 class="feature-title">Gains réels</h3>
+                    <p class="feature-text">Gagnez de l'argent réel à chaque victoire</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🏆</div>
+                    <h3 class="feature-title">Classement</h3>
+                    <p class="feature-text">Gravissez les échelons et devenez le meilleur</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🔥</div>
+                    <h3 class="feature-title">Séries</h3>
+                    <p class="feature-text">Enchaînez les victoires pour des bonus</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Menu toggle functionality
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        hamburgerBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!hamburgerBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+                mobileMenu.classList.add('hidden');
+            }
+        });
+
+        // Check auth and redirect if logged in
+        async function checkAuth() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) {
+                window.location.href = 'dashboard.html';
+            }
+        }
+
+        checkAuth();
+    </script>
+</body>
+</html>
