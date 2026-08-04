@@ -6,10 +6,7 @@
     <title>Tournois - QUIPERD</title>
     <link rel="stylesheet" href="output.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        const { createClient } = supabase;
-        const supabaseClient = createClient('https://ablgizyhsrxeyiqlwedk.supabase.co', 'sb_publishable_naBMhihexjfObenhOLfS7A_je5U9adw');
-    </script>
+    <script src="config.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body class="bg-[var(--color-bg-primary)] min-h-screen pb-20 md:pb-0">
@@ -83,85 +80,18 @@
 
         <!-- Featured Tournament -->
         <div class="glass-card-glow rounded-2xl p-6 md:p-8 mb-8 animate-fade-in-up" style="animation-delay: 0.1s">
-            <div class="flex items-center justify-between mb-4">
-                <span class="badge badge-gold animate-pulse">🔥 Tournoi en cours</span>
-                <span class="text-[var(--color-text-secondary)] text-sm">Saison 1</span>
+            <div class="text-center py-8">
+                <span class="text-6xl mb-4 block">🎮</span>
+                <h2 class="font-orbitron text-2xl md:text-3xl font-bold gradient-text mb-4">Aucun tournoi en cours</h2>
+                <p class="text-[var(--color-text-secondary)]">Les tournois seront bientôt disponibles. Revenez plus tard!</p>
             </div>
-            <h2 class="font-orbitron text-2xl md:text-3xl font-bold gradient-text-gold mb-4">Championnat Mondial eFootball</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                <div class="text-center">
-                    <p class="text-[var(--color-text-secondary)] mb-2">Participants</p>
-                    <p class="font-orbitron text-2xl font-bold text-[var(--color-cyan)]">128</p>
-                </div>
-                <div class="text-center">
-                    <p class="text-[var(--color-text-secondary)] mb-2">Cagnotte</p>
-                    <p class="font-orbitron text-2xl font-bold text-[var(--color-green)]">500,000 FCFA</p>
-                </div>
-                <div class="text-center">
-                    <p class="text-[var(--color-text-secondary)] mb-2">Temps restant</p>
-                    <p class="font-orbitron text-2xl font-bold text-[var(--color-orange)]">5j 12h</p>
-                </div>
-            </div>
-            <button class="btn btn-primary w-full py-3 rounded-lg font-semibold text-white hover:scale-105 transition-transform">
-                Participer au Tournoi
-            </button>
         </div>
 
         <!-- Upcoming Tournaments -->
         <div class="glass-card rounded-2xl p-6 md:p-8 mb-8 animate-fade-in-up" style="animation-delay: 0.2s">
             <h2 class="font-orbitron text-xl md:text-2xl font-bold gradient-text mb-6">Tournois à venir</h2>
             <div id="upcomingTournaments" class="space-y-4">
-                <div class="glass-card rounded-xl p-4 md:p-6 hover:scale-105 transition-transform">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div class="flex items-center gap-4">
-                            <div class="w-16 h-16 rounded-full bg-gradient-to-br from-[var(--color-purple-neon)] to-[var(--color-cyan)] flex items-center justify-center">
-                                <span class="text-3xl">🏆</span>
-                            </div>
-                            <div>
-                                <h3 class="font-orbitron font-bold text-lg">Tournoi Hebdomadaire</h3>
-                                <p class="text-[var(--color-text-secondary)] text-sm">32 joueurs • 50,000 FCFA</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <span class="badge badge-info">Dans 2 jours</span>
-                            <button class="btn btn-primary px-4 py-2 rounded-lg text-sm">S'inscrire</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="glass-card rounded-xl p-4 md:p-6 hover:scale-105 transition-transform">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div class="flex items-center gap-4">
-                            <div class="w-16 h-16 rounded-full bg-gradient-to-br from-[var(--color-green)] to-[var(--color-cyan)] flex items-center justify-center">
-                                <span class="text-3xl">⚔️</span>
-                            </div>
-                            <div>
-                                <h3 class="font-orbitron font-bold text-lg">Tournoi Flash</h3>
-                                <p class="text-[var(--color-text-secondary)] text-sm">16 joueurs • 20,000 FCFA</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <span class="badge badge-warning">Dans 5 jours</span>
-                            <button class="btn btn-primary px-4 py-2 rounded-lg text-sm">S'inscrire</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="glass-card rounded-xl p-4 md:p-6 hover:scale-105 transition-transform">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div class="flex items-center gap-4">
-                            <div class="w-16 h-16 rounded-full bg-gradient-to-br from-[var(--color-gold)] to-[var(--color-orange)] flex items-center justify-center">
-                                <span class="text-3xl">👑</span>
-                            </div>
-                            <div>
-                                <h3 class="font-orbitron font-bold text-lg">Tournoi Élite</h3>
-                                <p class="text-[var(--color-text-secondary)] text-sm">8 joueurs • 100,000 FCFA</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <span class="badge badge-danger">Dans 1 semaine</span>
-                            <button class="btn btn-primary px-4 py-2 rounded-lg text-sm">S'inscrire</button>
-                        </div>
-                    </div>
-                </div>
+                <p class="text-[var(--color-text-secondary)] text-center py-4">Aucun tournoi à venir pour le moment</p>
             </div>
         </div>
 
@@ -169,23 +99,7 @@
         <div class="glass-card rounded-2xl p-6 md:p-8 animate-fade-in-up" style="animation-delay: 0.3s">
             <h2 class="font-orbitron text-xl md:text-2xl font-bold gradient-text mb-6">Tournois terminés</h2>
             <div id="pastTournaments" class="space-y-4">
-                <div class="glass-card rounded-xl p-4 md:p-6 opacity-70">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div class="flex items-center gap-4">
-                            <div class="w-16 h-16 rounded-full bg-[var(--color-black-medium)] flex items-center justify-center">
-                                <span class="text-3xl">🏆</span>
-                            </div>
-                            <div>
-                                <h3 class="font-orbitron font-bold text-lg">Tournoi Précédent</h3>
-                                <p class="text-[var(--color-text-secondary)] text-sm">64 joueurs • Vainqueur: PlayerX</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <span class="badge badge-success">Terminé</span>
-                            <button class="btn btn-secondary px-4 py-2 rounded-lg text-sm">Voir résultats</button>
-                        </div>
-                    </div>
-                </div>
+                <p class="text-[var(--color-text-secondary)] text-center py-4">Aucun tournoi terminé pour le moment</p>
             </div>
         </div>
     </main>
