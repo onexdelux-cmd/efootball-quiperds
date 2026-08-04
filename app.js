@@ -17,12 +17,23 @@ async function loadUserProfile() {
         .from('profiles')
         .select('*')
         .eq('id', currentUser.id)
-        .single();
+        .maybeSingle();
     
     if (error) {
         console.error('Error loading profile:', error);
-    } else {
+    } else if (data) {
         userProfile = data;
+    } else {
+        console.log('No profile found for user, creating default profile');
+        userProfile = {
+            id: currentUser.id,
+            username: currentUser.email?.split('@')[0] || 'User',
+            balance: 0,
+            total_wins: 0,
+            total_losses: 0,
+            total_draws: 0,
+            total_earned: 0
+        };
     }
 }
 
