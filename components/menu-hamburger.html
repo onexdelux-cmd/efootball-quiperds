@@ -1,0 +1,152 @@
+<!-- Menu Hamburger Component - Version Conditionnelle -->
+<nav class="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-lg border-b border-gray-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+            <!-- Logo -->
+            <div class="flex-shrink-0">
+                <a href="index.html" class="font-orbitron text-2xl font-bold gradient-text">QUIPERD</a>
+            </div>
+            
+            <!-- Hamburger Button -->
+            <button id="hamburgerBtn" class="p-2 rounded-lg hover:bg-white/10 transition-colors">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="hidden bg-black/95 border-t border-gray-800">
+        <div class="px-4 py-6 space-y-4">
+            <!-- Menu pour non-connectés -->
+            <div id="guestMenu" class="space-y-3">
+                <a href="collection.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white font-semibold">
+                    🎮 Collection
+                </a>
+                <a href="login.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white font-semibold">
+                    🔐 Connexion
+                </a>
+                <a href="login.html#register" class="block px-4 py-3 rounded-lg btn-primary text-white font-semibold text-center">
+                    ✨ Inscription
+                </a>
+            </div>
+            
+            <!-- Menu pour connectés -->
+            <div id="userMenu" class="hidden space-y-3">
+                <div class="px-4 py-3 bg-white/5 rounded-lg">
+                    <p class="text-gray-400 text-sm">Connecté en tant que</p>
+                    <p id="menuUsername" class="font-orbitron font-bold text-white">Utilisateur</p>
+                </div>
+                
+                <a href="dashboard.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white">
+                    🏠 Accueil
+                </a>
+                <a href="challenges.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white">
+                    ⚔️ Salle des Défis
+                </a>
+                <a href="wallet.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white">
+                    💰 Portefeuille
+                </a>
+                <a href="ranking.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white">
+                    🏆 Classement
+                </a>
+                <a href="history.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white">
+                    📜 Historique
+                </a>
+                <a href="profile.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white">
+                    👤 Mon Compte
+                </a>
+                
+                <!-- Notifications Badge -->
+                <a href="notifications.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white relative">
+                    🔔 Notifications
+                    <span id="notificationBadge" class="hidden absolute right-4 top-3 w-5 h-5 bg-red-500 rounded-full text-xs flex items-center justify-center">0</span>
+                </a>
+                
+                <!-- Admin Link (visible seulement pour admins) -->
+                <a href="admin.html" id="adminLink" class="hidden block px-4 py-3 rounded-lg bg-red-500/20 hover:bg-red-500/30 transition-colors text-red-400">
+                    🛡️ Administration
+                </a>
+                
+                <button id="logoutBtn" class="block w-full px-4 py-3 rounded-lg bg-red-500/20 hover:bg-red-500/30 transition-colors text-red-400 font-semibold text-left">
+                    🚪 Déconnexion
+                </button>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<script>
+// Menu toggle functionality
+const hamburgerBtn = document.getElementById('hamburgerBtn');
+const mobileMenu = document.getElementById('mobileMenu');
+
+hamburgerBtn.addEventListener('click', () => {
+    mobileMenu.classList.toggle('hidden');
+});
+
+// Close menu when clicking outside
+document.addEventListener('click', (e) => {
+    if (!hamburgerBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+        mobileMenu.classList.add('hidden');
+    }
+});
+
+// Check auth status and show appropriate menu
+async function checkAuthForMenu() {
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (session) {
+        document.getElementById('guestMenu').classList.add('hidden');
+        document.getElementById('userMenu').classList.remove('hidden');
+        
+        // Load user info
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('username')
+            .eq('id', session.user.id)
+            .single();
+        
+        if (profile) {
+            document.getElementById('menuUsername').textContent = profile.username;
+        }
+        
+        // Check if admin
+        const { data: isAdmin } = await supabase
+            .from('admin_users')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+        
+        if (isAdmin) {
+            document.getElementById('adminLink').classList.remove('hidden');
+        }
+        
+        // Load notification count
+        const { data: notifications } = await supabase
+            .from('notifications')
+            .select('id')
+            .eq('user_id', session.user.id)
+            .eq('is_read', false);
+        
+        if (notifications && notifications.length > 0) {
+            const badge = document.getElementById('notificationBadge');
+            badge.textContent = notifications.length;
+            badge.classList.remove('hidden');
+        }
+    } else {
+        document.getElementById('guestMenu').classList.remove('hidden');
+        document.getElementById('userMenu').classList.add('hidden');
+    }
+}
+
+// Logout functionality
+document.getElementById('logoutBtn')?.addEventListener('click', async () => {
+    await supabase.auth.signOut();
+    window.location.href = 'index.html';
+});
+
+// Initialize menu on load
+document.addEventListener('DOMContentLoaded', checkAuthForMenu);
+</script>

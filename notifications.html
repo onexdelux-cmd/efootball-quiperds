@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications - QUIPERD</title>
+    <link rel="stylesheet" href="output.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const { createClient } = supabase;
+        const supabaseClient = createClient('https://ablgizyhsrxeyiqlwedk.supabase.co', 'sb_publishable_naBMhihexjfObenhOLfS7A_je5U9adw');
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+        
+        .font-orbitron {
+            font-family: 'Orbitron', sans-serif;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #00d4ff 0%, #7b2ff7 50%, #ff006e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #00d4ff 0%, #7b2ff7 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
+        }
+        
+        .neon-border {
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.2), inset 0 0 20px rgba(0, 212, 255, 0.05);
+        }
+        
+        .notification-unread {
+            border-left: 4px solid #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="pt-16">
+    <!-- Menu Hamburger pour connectés -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-lg border-b border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <a href="dashboard.html" class="font-orbitron text-2xl font-bold gradient-text">QUIPERD</a>
+                </div>
+                <button id="hamburgerBtn" class="p-2 rounded-lg hover:bg-white/10 transition-colors">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div id="mobileMenu" class="hidden bg-black/95 border-t border-gray-800">
+            <div class="px-4 py-6 space-y-4">
+                <div class="px-4 py-3 bg-white/5 rounded-lg">
+                    <p class="text-gray-400 text-sm">Connecté en tant que</p>
+                    <p id="menuUsername" class="font-orbitron font-bold text-white">Utilisateur</p>
+                </div>
+                
+                <a href="dashboard.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white">
+                    🏠 Accueil
+                </a>
+                <a href="users-room.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white">
+                    👥 Salle des Utilisateurs
+                </a>
+                <a href="challenges.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white">
+                    ⚔️ Salle des Défis
+                </a>
+                <a href="wallet.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white">
+                    💰 Portefeuille
+                </a>
+                <a href="ranking.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white">
+                    🏆 Classement
+                </a>
+                <a href="history.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white">
+                    📜 Historique
+                </a>
+                <a href="profile.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white">
+                    👤 Mon Compte
+                </a>
+                
+                <a href="notifications.html" class="block px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-white relative">
+                    🔔 Notifications
+                    <span id="notificationBadge" class="hidden absolute right-4 top-3 w-5 h-5 bg-red-500 rounded-full text-xs flex items-center justify-center">0</span>
+                </a>
+                
+                <a href="admin.html" id="adminLink" class="hidden block px-4 py-3 rounded-lg bg-red-500/20 hover:bg-red-500/30 transition-colors text-red-400">
+                    🛡️ Administration
+                </a>
+                
+                <button id="logoutBtn" class="block w-full px-4 py-3 rounded-lg bg-red-500/20 hover:bg-red-500/30 transition-colors text-red-400 font-semibold text-left">
+                    🚪 Déconnexion
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenu principal -->
+    <main class="max-w-7xl mx-auto px-4 py-12">
+        <!-- Header -->
+        <div class="mb-8 flex justify-between items-center">
+            <div>
+                <h1 class="font-orbitron text-4xl font-bold gradient-text mb-2">Notifications</h1>
+                <p class="text-gray-400">Vos notifications récentes</p>
+            </div>
+            <button onclick="markAllAsRead()" class="btn-primary px-6 py-3 rounded-lg font-semibold text-white">
+                Tout marquer comme lu
+            </button>
+        </div>
+
+        <!-- Notifications List -->
+        <div class="glass-card rounded-2xl p-8 neon-border">
+            <div id="notificationsList" class="space-y-4">
+                <p class="text-gray-400 text-center py-4">Chargement...</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Menu toggle functionality
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        hamburgerBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!hamburgerBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+                mobileMenu.classList.add('hidden');
+            }
+        });
+
+        // Check auth status
+        async function checkAuth() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            
+            if (!session) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            const { data: profile } = await supabaseClient
+                .from('profiles')
+                .select('*')
+                .eq('id', session.user.id)
+                .single();
+
+            if (profile) {
+                document.getElementById('menuUsername').textContent = profile.username;
+
+                const { data: isAdmin } = await supabaseClient
+                    .from('admin_users')
+                    .select('*')
+                    .eq('id', session.user.id)
+                    .single();
+
+                if (isAdmin) {
+                    document.getElementById('adminLink').classList.remove('hidden');
+                }
+
+                loadNotifications(session.user.id);
+            }
+        }
+
+        // Load notifications
+        async function loadNotifications(userId) {
+            const { data: notifications } = await supabaseClient
+                .from('notifications')
+                .select('*')
+                .eq('user_id', userId)
+                .order('created_at', { ascending: false })
+                .limit(50);
+
+            const container = document.getElementById('notificationsList');
+            
+            if (!notifications || notifications.length === 0) {
+                container.innerHTML = '<p class="text-gray-400 text-center py-4">Aucune notification</p>';
+                return;
+            }
+
+            // Update badge
+            const unreadCount = notifications.filter(n => !n.is_read).length;
+            if (unreadCount > 0) {
+                const badge = document.getElementById('notificationBadge');
+                badge.textContent = unreadCount;
+                badge.classList.remove('hidden');
+            }
+
+            container.innerHTML = notifications.map(notification => {
+                const icon = getNotificationIcon(notification.type);
+                const isUnread = !notification.is_read;
+                const isClickable = notification.related_duel_id;
+                
+                return `
+                    <div class="flex items-start p-4 rounded-lg ${isUnread ? 'notification-unread' : 'bg-white/5'} hover:bg-white/10 transition-colors cursor-pointer" onclick="${isClickable ? `goToDuelRoom('${notification.related_duel_id}')` : `markAsRead('${notification.id}')`}">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-400 to-purple-500 flex items-center justify-center mr-4 flex-shrink-0">
+                            <span class="text-xl">${icon}</span>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-start mb-1">
+                                <h3 class="font-semibold">${notification.title}</h3>
+                                <span class="text-gray-400 text-sm">${new Date(notification.created_at).toLocaleDateString('fr-FR')}</span>
+                            </div>
+                            <p class="text-gray-400 text-sm">${notification.message}</p>
+                            ${isUnread ? '<span class="inline-block mt-2 px-2 py-1 bg-cyan-500/20 text-cyan-400 text-xs rounded-full">Non lu</span>' : ''}
+                            ${isClickable ? '<span class="inline-block mt-2 px-2 py-1 bg-purple-500/20 text-purple-400 text-xs rounded-full">Cliquez pour rejoindre le duel</span>' : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Get notification icon
+        function getNotificationIcon(type) {
+            const icons = {
+                'duel_accepted': '⚔️',
+                'duel_created': '🎯',
+                'duel_completed': '🏆',
+                'payment_received': '💰',
+                'payment_sent': '💸',
+                'account_update': '👤',
+                'system': '🔔'
+            };
+            return icons[type] || '🔔';
+        }
+
+        // Mark as read
+        async function markAsRead(notificationId) {
+            const { error } = await supabaseClient
+                .from('notifications')
+                .update({ is_read: true })
+                .eq('id', notificationId);
+
+            if (!error) {
+                checkAuth();
+            }
+        }
+
+        // Go to duel room
+        function goToDuelRoom(duelId) {
+            window.location.href = `duel-room.html?duel_id=${duelId}`;
+        }
+
+        // Mark all as read
+        async function markAllAsRead() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            
+            const { error } = await supabaseClient
+                .from('notifications')
+                .update({ is_read: true })
+                .eq('user_id', session.user.id)
+                .eq('is_read', false);
+
+            if (!error) {
+                alert('Toutes les notifications marquées comme lues');
+                checkAuth();
+            }
+        }
+
+        // Logout
+        document.getElementById('logoutBtn')?.addEventListener('click', async () => {
+            await supabaseClient.auth.signOut();
+            window.location.href = 'index.html';
+        });
+
+        checkAuth();
+    </script>
+</body>
+</html>
