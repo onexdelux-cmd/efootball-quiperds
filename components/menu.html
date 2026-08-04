@@ -103,7 +103,7 @@ async function checkAuthForMenu() {
             .from('profiles')
             .select('username')
             .eq('id', session.user.id)
-            .single();
+            .maybeSingle();
         
         if (profile) {
             document.getElementById('menuUsername').textContent = profile.username;
@@ -114,7 +114,7 @@ async function checkAuthForMenu() {
             .from('admin_users')
             .select('*')
             .eq('id', session.user.id)
-            .single();
+            .maybeSingle();
         
         if (isAdmin) {
             document.getElementById('adminLink').classList.remove('hidden');

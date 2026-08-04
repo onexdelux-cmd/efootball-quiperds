@@ -221,7 +221,7 @@
                 .from('admin_users')
                 .select('*')
                 .eq('id', session.user.id)
-                .single();
+                .maybeSingle();
 
             if (!isAdmin) {
                 window.location.href = 'dashboard.html';
@@ -232,7 +232,7 @@
                 .from('profiles')
                 .select('*')
                 .eq('id', session.user.id)
-                .single();
+                .maybeSingle();
 
             if (profile) {
                 document.getElementById('menuUsername').textContent = profile.username;

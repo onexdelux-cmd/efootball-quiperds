@@ -146,7 +146,7 @@
                 .from('profiles')
                 .select('*')
                 .eq('id', session.user.id)
-                .single();
+                .maybeSingle();
 
             if (profile) {
                 document.getElementById('menuUsername').textContent = profile.username;
@@ -155,7 +155,7 @@
                     .from('admin_users')
                     .select('*')
                     .eq('id', session.user.id)
-                    .single();
+                    .maybeSingle();
 
                 if (isAdmin) {
                     document.getElementById('adminLink').classList.remove('hidden');

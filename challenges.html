@@ -181,7 +181,7 @@
                 .from('profiles')
                 .select('*')
                 .eq('id', session.user.id)
-                .single();
+                .maybeSingle();
 
             if (profile) {
                 document.getElementById('menuUsername').textContent = profile.username;
@@ -190,7 +190,7 @@
                     .from('admin_users')
                     .select('*')
                     .eq('id', session.user.id)
-                    .single();
+                    .maybeSingle();
 
                 if (isAdmin) {
                     document.getElementById('adminLink').classList.remove('hidden');
@@ -336,7 +336,7 @@
                 .from('duels')
                 .select('creator_id')
                 .eq('id', duelId)
-                .single();
+                .maybeSingle();
             
             const { error } = await supabaseClient
                 .from('duels')
@@ -354,7 +354,7 @@
                     .from('profiles')
                     .select('username')
                     .eq('id', session.user.id)
-                    .single();
+                    .maybeSingle();
                 
                 await supabaseClient.from('notifications').insert({
                     user_id: duel.creator_id,
@@ -378,7 +378,7 @@
                 .from('profiles')
                 .select('balance')
                 .eq('id', session.user.id)
-                .single();
+                .maybeSingle();
 
             const amount = parseFloat(document.getElementById('duelAmount').value);
             const message = document.getElementById('duelMessage').value;

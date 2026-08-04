@@ -194,7 +194,7 @@
                 .from('profiles')
                 .select('*')
                 .eq('id', session.user.id)
-                .single();
+                .maybeSingle();
 
             if (profile) {
                 document.getElementById('menuUsername').textContent = profile.username;
@@ -203,7 +203,7 @@
                     .from('admin_users')
                     .select('*')
                     .eq('id', session.user.id)
-                    .single();
+                    .maybeSingle();
 
                 if (isAdmin) {
                     document.getElementById('adminLink').classList.remove('hidden');
@@ -244,7 +244,7 @@
                     challenger:profiles(username)
                 `)
                 .eq('id', duelId)
-                .single();
+                .maybeSingle();
 
             if (!duel) {
                 alert('Duel non trouvé');
@@ -272,7 +272,7 @@
                 .select('*')
                 .eq('duel_id', duelId)
                 .eq('voter_id', currentUserId)
-                .single();
+                .maybeSingle();
 
             if (existingVote) {
                 disableButtons();
@@ -368,7 +368,7 @@
                 .from('duels')
                 .select('*')
                 .eq('id', duelId)
-                .single();
+                .maybeSingle();
 
             const amount = parseFloat(duel.amount);
             const commission = amount * SYSTEM_COMMISSION;
@@ -476,7 +476,7 @@
                 .from('duels')
                 .select('*')
                 .eq('id', duelId)
-                .single();
+                .maybeSingle();
 
             // Create admin alert
             await supabaseClient.from('admin_alerts').insert({
