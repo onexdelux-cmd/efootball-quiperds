@@ -202,12 +202,27 @@ CREATE POLICY "Users can insert own transactions" ON transactions
 CREATE OR REPLACE FUNCTION handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-    INSERT INTO profiles (id, username, full_name, avatar_url)
+    INSERT INTO profiles (
+        id, 
+        username, 
+        full_name, 
+        avatar_url,
+        balance,
+        total_wins,
+        total_losses,
+        total_draws,
+        total_earned
+    )
     VALUES (
         NEW.id,
         COALESCE(NEW.raw_user_meta_data->>'username', split_part(NEW.email, '@', 1)),
-        COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name'),
-        NEW.raw_user_meta_data->>'avatar_url'
+        COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name', split_part(NEW.email, '@', 1)),
+        NEW.raw_user_meta_data->>'avatar_url',
+        0,  -- balance initial
+        0,  -- total_wins initial
+        0,  -- total_losses initial
+        0,  -- total_draws initial
+        0   -- total_earned initial
     );
     RETURN NEW;
 EXCEPTION
